@@ -125,7 +125,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       "categoryId is wrong please provide a valid category"
     );
   }
-  if (category && req.user?._id !== category.userId) {
+  if (category && !category.userId.equals(req.user?._id)) {
     throw new ApiError(400, "you are not allowed to update this category");
   }
   const existingCategory = await Category.findByIdAndUpdate(
