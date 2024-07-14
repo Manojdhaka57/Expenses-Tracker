@@ -80,15 +80,14 @@ const deleteCategory = asyncHandler(async (req, res) => {
   if (!categoryId) {
     throw new ApiError(400, "categoryId is required");
   }
-  const existingCategory = await Category.findByIdAndDelete(categoryId);
+  const existingCategory = await Category.findOneAndDelete({
+    $and: [{ _id: categoryId, userId: req.user?._id }],
+  });
   if (!existingCategory) {
     throw new ApiError(
       400,
       "categoryId is wrong please provide a valid category"
     );
-  }
-  if (existingCategory && req.user?._id !== existingCategory.userId) {
-    throw new ApiError(400, "you are not allowed to delete this category");
   }
 
   return res
@@ -118,16 +117,16 @@ const updateCategory = asyncHandler(async (req, res) => {
     throw new ApiError(400, "user does not exist");
   }
 
-  const category = await Category.findById(categoryId);
+  const category = await Category.findOne({
+    $and: [{ _id: categoryId }, { userId: req.user?._id }],
+  });
   if (!category) {
     throw new ApiError(
       400,
       "categoryId is wrong please provide a valid category"
     );
   }
-  if (category && !category.userId.equals(req.user?._id)) {
-    throw new ApiError(400, "you are not allowed to update this category");
-  }
+
   const existingCategory = await Category.findByIdAndUpdate(
     categoryId,
     {
