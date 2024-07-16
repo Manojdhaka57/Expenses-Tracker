@@ -216,4 +216,44 @@ const categoryWiseExpense = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, expenses, "all expenses according category"));
 });
-export { addExpenses, allExpenses, deleteExpense, categoryWiseExpense };
+
+const expenseSummary = asyncHandler(async (req, res) => {
+  const expenses = await Expense.aggregate([
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(req.user?._id),
+      },
+    },
+    {
+      $group: {
+        _id: "$expenseType",
+        count: {
+          $sum: 1,
+        },
+        totalExpenses: {
+          $sum: "$amount",
+        },
+      },
+    },
+
+    {
+      $addFields: {
+        totalExpenses: {
+          $round: ["$totalExpenses", 2],
+        },
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, expenses, "expenses summary fetched successfully")
+    );
+});
+export {
+  addExpenses,
+  allExpenses,
+  deleteExpense,
+  categoryWiseExpense,
+  expenseSummary,
+};
