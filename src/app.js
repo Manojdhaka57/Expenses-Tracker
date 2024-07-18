@@ -3,6 +3,7 @@ import cors from "cors";
 import userRouter from "../routes/user.routes.js";
 import categoryRouter from "../routes/category.routes.js";
 import expenseRouter from "../routes/expense.routes.js";
+import personRouter from "../routes/person.routes.js";
 const app = express();
 
 app.use(cors());
@@ -18,4 +19,5 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/expense", expenseRouter);
+app.use("/api/v1/person", personRouter);
 export { app };

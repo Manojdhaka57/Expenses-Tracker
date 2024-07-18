@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const categorySchema = new mongoose.Schema(
+const personSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -8,12 +8,14 @@ const categorySchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, "category name is required"],
+      required: [true, "person name is required"],
       trim: true,
       unique: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export const Category = mongoose.model("Category", categorySchema);
+export const Person = mongoose.model("Person", personSchema);

@@ -63,7 +63,7 @@ const addCategory = asyncHandler(async (req, res) => {
   });
 
   if (!createdCategory) {
-    throw new ApiError(400, "Something went wrong while creatating category");
+    throw new ApiError(400, "Something went wrong while creating category");
   }
 
   user.categories.unshift(createdCategory._id);
