@@ -52,6 +52,33 @@ const personDetails = asyncHandler(async (req, res) => {
 });
 
 const updatedPerson = asyncHandler(async (req, res) => {
+  const { name } = req.body;
+  if (!name?.trim()) {
+    throw new ApiError(400, "Person name is required");
+  }
+  const { personId } = req.params;
+  if (!personId) {
+    throw new ApiError(400, "personId is required");
+  }
+
+  const existingPerson = await Person.findOneAndUpdate(
+    {
+      $and: [{ _id: personId }, { userId: req.user?._id }],
+    },
+    {
+      $set: {
+        name,
+      },
+    },
+    { new: true }
+  );
+  if (!existingPerson) {
+    throw new ApiError(
+      400,
+      "personId is wrong please provide a valid personId"
+    );
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Person details updated successfully"));
