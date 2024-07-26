@@ -26,7 +26,7 @@ const addExpenses = asyncHandler(async (req, res) => {
     amount,
   });
   if (!expense) {
-    throw new Error(500, "Something went wrong while adding expense");
+    throw new ApiError(500, "Something went wrong while adding expense");
   }
   return res
     .status(201)
