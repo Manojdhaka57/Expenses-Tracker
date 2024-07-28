@@ -206,7 +206,7 @@ const userTransactionsSummary = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { useTransactionSummary: transactionSummary },
+        { userTransactionSummary: transactionSummary },
         "userTransactionsSummary fetched successfully"
       )
     );
