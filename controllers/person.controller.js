@@ -46,9 +46,19 @@ const allPersons = asyncHandler(async (req, res) => {
 });
 
 const personDetails = asyncHandler(async (req, res) => {
+  const { personId } = req.params;
+  const existingPerson = await Person.findOne({
+    $and: [{ _id: personId }, { userId: req.user?._id }],
+  }).select("_id name");
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Person details fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        existingPerson,
+        "Person details fetched successfully"
+      )
+    );
 });
 
 const updatedPerson = asyncHandler(async (req, res) => {
