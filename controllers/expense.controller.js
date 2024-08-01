@@ -54,6 +54,11 @@ const allExpenses = asyncHandler(async (req, res) => {
       },
     },
     {
+      $sort: {
+        updatedAt: -1,
+      },
+    },
+    {
       $skip: page * size,
     },
     {
@@ -114,11 +119,6 @@ const allExpenses = asyncHandler(async (req, res) => {
             },
           },
         },
-      },
-    },
-    {
-      $sort: {
-        updatedAt: -1,
       },
     },
   ]);
