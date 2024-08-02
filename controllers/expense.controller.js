@@ -34,9 +34,27 @@ const addExpenses = asyncHandler(async (req, res) => {
 });
 
 const allExpenses = asyncHandler(async (req, res) => {
-  const { page = 0, size = 10 } = req.body;
+  const { page = 0, size = 10, fromDate, toDate, categoryId } = req.body;
+  let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
+  if (fromDate) {
+    queryString.createdAt = {
+      $gte: new Date(fromDate),
+    };
+  }
+  if (toDate) {
+    queryString.createdAt = {
+      ...queryString?.createdAt,
+      $lte: new Date(toDate),
+    };
+  }
 
+  if (categoryId) {
+    queryString.categoryId = new mongoose.Types.ObjectId(categoryId);
+  }
   const pagination = await Expense.aggregate([
+    {
+      $match: queryString,
+    },
     {
       $count: "totalRecords",
     },
@@ -47,11 +65,10 @@ const allExpenses = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
   const expenses = await Expense.aggregate([
     {
-      $match: {
-        userId: new mongoose.Types.ObjectId(req.user?._id),
-      },
+      $match: queryString,
     },
     {
       $sort: {
@@ -63,22 +80,6 @@ const allExpenses = asyncHandler(async (req, res) => {
     },
     {
       $limit: size,
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "userInfo",
-        pipeline: [
-          {
-            $project: {
-              username: 1,
-              email: 1,
-            },
-          },
-        ],
-      },
     },
     {
       $lookup: {
@@ -108,17 +109,11 @@ const allExpenses = asyncHandler(async (req, res) => {
             },
           },
         },
-        userInfo: {
-          $cond: {
-            if: {
-              $eq: [{ $size: "$userInfo" }, 0],
-            },
-            then: {},
-            else: {
-              $first: "$userInfo",
-            },
-          },
-        },
+      },
+    },
+    {
+      $project: {
+        userId: 0,
       },
     },
   ]);
@@ -127,7 +122,7 @@ const allExpenses = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { expenses, pagination: pagination[0] },
+        { expenses, pagination: pagination[0] || {} },
         "fetched all expenses"
       )
     );
