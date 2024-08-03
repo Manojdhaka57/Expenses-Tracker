@@ -150,11 +150,22 @@ const deleteExpense = asyncHandler(async (req, res) => {
 });
 
 const categoryWiseExpense = asyncHandler(async (req, res) => {
+  const { fromDate, toDate } = req.body;
+  let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
+  if (fromDate) {
+    queryString.createdAt = {
+      $gte: new Date(fromDate),
+    };
+  }
+  if (toDate) {
+    queryString.createdAt = {
+      ...queryString?.createdAt,
+      $lte: new Date(toDate),
+    };
+  }
   const expenses = await Expense.aggregate([
     {
-      $match: {
-        userId: new mongoose.Types.ObjectId(req.user?._id),
-      },
+      $match: queryString,
     },
     {
       $group: {
@@ -218,11 +229,22 @@ const categoryWiseExpense = asyncHandler(async (req, res) => {
 });
 
 const expenseSummary = asyncHandler(async (req, res) => {
+  const { fromDate, toDate } = req.body;
+  let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
+  if (fromDate) {
+    queryString.createdAt = {
+      $gte: new Date(fromDate),
+    };
+  }
+  if (toDate) {
+    queryString.createdAt = {
+      ...queryString?.createdAt,
+      $lte: new Date(toDate),
+    };
+  }
   const expenses = await Expense.aggregate([
     {
-      $match: {
-        userId: new mongoose.Types.ObjectId(req.user?._id),
-      },
+      $match: queryString,
     },
     {
       $group: {
