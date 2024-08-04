@@ -272,6 +272,12 @@ const expenseSummary = asyncHandler(async (req, res) => {
         },
       },
     },
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+      },
+    },
   ]);
   const expenses = await Expense.aggregate([
     {
