@@ -242,6 +242,37 @@ const expenseSummary = asyncHandler(async (req, res) => {
       $lte: new Date(toDate),
     };
   }
+
+  const monthWiseExpenses = await Expense.aggregate([
+    {
+      $match: {
+        userId: new mongoose.Types.ObjectId(req.user?._id),
+        expenseType: "expense",
+      },
+    },
+    {
+      $group: {
+        _id: {
+          expenseType: "$expenseType",
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" },
+        },
+        totalExpense: {
+          $sum: "$amount",
+        },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $addFields: {
+        totalExpense: {
+          $round: ["$totalExpense", 2],
+        },
+      },
+    },
+  ]);
   const expenses = await Expense.aggregate([
     {
       $match: queryString,
@@ -269,7 +300,11 @@ const expenseSummary = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, expenses, "expenses summary fetched successfully")
+      new ApiResponse(
+        200,
+        { expenses, monthWiseExpenses },
+        "expenses summary fetched successfully"
+      )
     );
 });
 export {
