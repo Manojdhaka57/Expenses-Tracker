@@ -34,17 +34,17 @@ const addExpenses = asyncHandler(async (req, res) => {
 });
 
 const allExpenses = asyncHandler(async (req, res) => {
-  const { page = 0, size = 10, fromDate, toDate, categoryId } = req.body;
+  const { page = 0, size = 10, fromDate, endDate, categoryId } = req.body;
   let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
   if (fromDate) {
     queryString.createdAt = {
       $gte: new Date(fromDate),
     };
   }
-  if (toDate) {
+  if (endDate) {
     queryString.createdAt = {
       ...queryString?.createdAt,
-      $lte: new Date(toDate),
+      $lte: new Date(endDate),
     };
   }
 
@@ -150,17 +150,17 @@ const deleteExpense = asyncHandler(async (req, res) => {
 });
 
 const categoryWiseExpense = asyncHandler(async (req, res) => {
-  const { fromDate, toDate } = req.body;
+  const { fromDate, endDate } = req.body;
   let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
   if (fromDate) {
     queryString.createdAt = {
       $gte: new Date(fromDate),
     };
   }
-  if (toDate) {
+  if (endDate) {
     queryString.createdAt = {
       ...queryString?.createdAt,
-      $lte: new Date(toDate),
+      $lte: new Date(endDate),
     };
   }
   const expenses = await Expense.aggregate([
@@ -229,17 +229,17 @@ const categoryWiseExpense = asyncHandler(async (req, res) => {
 });
 
 const expenseSummary = asyncHandler(async (req, res) => {
-  const { fromDate, toDate } = req.body;
+  const { fromDate, endDate } = req.body;
   let queryString = { userId: new mongoose.Types.ObjectId(req.user?._id) };
   if (fromDate) {
     queryString.createdAt = {
       $gte: new Date(fromDate),
     };
   }
-  if (toDate) {
+  if (endDate) {
     queryString.createdAt = {
       ...queryString?.createdAt,
-      $lte: new Date(toDate),
+      $lte: new Date(endDate),
     };
   }
 
@@ -279,6 +279,7 @@ const expenseSummary = asyncHandler(async (req, res) => {
       },
     },
   ]);
+  console.log("@test", queryString);
   const expenses = await Expense.aggregate([
     {
       $match: queryString,
