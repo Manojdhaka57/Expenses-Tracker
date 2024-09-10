@@ -94,7 +94,7 @@ const loginUser = asyncHandler(async (req, res) => {
   );
   // send cookies
   const options = {
-    htpOnly: true,
+    httpOnly: true,
     secure: true,
   };
 
