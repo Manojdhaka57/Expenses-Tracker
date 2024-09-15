@@ -16,6 +16,6 @@ router.route("/allExpenses").post(verifyJWT, allExpenses);
 router.route("/:expenseId").delete(verifyJWT, deleteExpense);
 router.route("/categoryWiseExpense").post(verifyJWT, categoryWiseExpense);
 router.route("/expenseSummary").post(verifyJWT, expenseSummary);
-router.route("/dayWiseExpense").get(verifyJWT, dayWiseExpense);
+router.route("/dayWiseExpense").post(verifyJWT, dayWiseExpense);
 
 export default router;
