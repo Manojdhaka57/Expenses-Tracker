@@ -4,6 +4,7 @@ import {
   addExpenses,
   allExpenses,
   categoryWiseExpense,
+  dayWiseExpense,
   deleteExpense,
   expenseSummary,
 } from "../controllers/expense.controller.js";
@@ -15,5 +16,6 @@ router.route("/allExpenses").post(verifyJWT, allExpenses);
 router.route("/:expenseId").delete(verifyJWT, deleteExpense);
 router.route("/categoryWiseExpense").post(verifyJWT, categoryWiseExpense);
 router.route("/expenseSummary").post(verifyJWT, expenseSummary);
+router.route("/dayWiseExpense").get(verifyJWT, dayWiseExpense);
 
 export default router;

@@ -279,7 +279,6 @@ const expenseSummary = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  console.log("@test", queryString);
   const expenses = await Expense.aggregate([
     {
       $match: queryString,
@@ -314,10 +313,60 @@ const expenseSummary = asyncHandler(async (req, res) => {
       )
     );
 });
+
+const dayWiseExpense = asyncHandler(async (req, res) => {
+  const { fromDate, endDate } = req.body;
+  let queryString = {
+    userId: new mongoose.Types.ObjectId(req.user?._id),
+    expenseType: "expense",
+  };
+  if (fromDate) {
+    queryString.createdAt = {
+      $gte: new Date(fromDate),
+    };
+  }
+  if (endDate) {
+    queryString.createdAt = {
+      ...queryString?.createdAt,
+      $lte: new Date(endDate),
+    };
+  }
+
+  const expenses = await Expense.aggregate([
+    {
+      $match: queryString,
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+        },
+        totalExpense: {
+          $sum: "$amount",
+        },
+      },
+    },
+    {
+      $sort: {
+        _id: -1,
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        expenses,
+        "expenses summary by days fetched successfully"
+      )
+    );
+});
 export {
   addExpenses,
   allExpenses,
   deleteExpense,
   categoryWiseExpense,
   expenseSummary,
+  dayWiseExpense,
 };
